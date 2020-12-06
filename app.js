@@ -10,6 +10,7 @@ const searchBar = document.querySelector('.search-input input');
 function getSuggestions(){
     var request = new XMLHttpRequest();
 
+    suggestions = [];
     request.addEventListener('readystatechange', () =>{
         if(request.readyState === 4 && request.status === 200){
             data = JSON.parse(request.responseText)
@@ -39,7 +40,6 @@ searchBar.addEventListener('keyup', () =>{
         }
     });
     
-    
     searchResult.style.display = "block";
     filtered.forEach(name =>{
         searchResult.innerHTML += `<li>${name}</li>`
@@ -54,22 +54,32 @@ searchResult.addEventListener('click', e =>{
 
 
 USD.addEventListener("keyup", () =>{
-    let index = filter();
+    let index;
+    suggestions.filter((name,pos) =>{
+        if(name === searchBar.value){
+            index = pos;
+        }
+    })
     convert.value = USD.value/price[index];
 })
 
 
 convert.addEventListener("keyup", () =>{
-    let index = filter();
+    let index;
+    suggestions.filter((name,pos) =>{
+        if(name === searchBar.value){
+            index = pos;
+        }
+    })
     USD.value = price[index]*convert.value
 })
 
-function filter(){
-    suggestions.filter((name,pos) =>{
-        if(name === searchBar.value){
-            return index;
-        }
-    })
-}
 
+window.addEventListener('click', e=>{
+    let valstring = `<input type ="text" placeholder="Type to search">`;
+    if(e.target != valstring){
+        searchResult.style.display = "none";
+    }
+})
 getSuggestions();
+setInterval(getSuggestions, 60000);
